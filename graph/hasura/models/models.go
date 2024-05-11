@@ -1,24 +1,26 @@
-package hasura
+package hasura_models
+
+import "encoding/json"
 
 type GraphQLError struct {
 	Message string `json:"message"`
 }
 
 type RegisterOutput struct {
-	Email        *string
-	First_name   *string
-	Id           int
-	Last_name    *string
-	Phone_number *string
+	Id         *string
+	First_name *string
+	Last_name  *string
+	Username   *string
+	Email      *string
 }
 
 type SearchUserOutput struct {
-	Email        string
-	First_name   string
-	Id           int
-	Last_name    string
-	Password     string
-	Phone_number string
+	Id         string
+	First_name string
+	Last_name  string
+	Username   string
+	Email      string
+	Password   string
 }
 
 type Mutation struct {
@@ -26,11 +28,28 @@ type Mutation struct {
 }
 
 type RegisterArgs struct {
-	First_name   string
-	Last_name    string
-	Email        string
-	Phone_number string
-	Password     string
+	First_name string `json:"first_name"`
+	Last_name  string `json:"last_name"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+}
+
+func (rg *RegisterArgs) ToMap() (map[string]interface{}, error) {
+	// Marshal the struct to a byte slice
+	data, err := json.Marshal(rg)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal the byte slice into a map[string]interface{}
+	var result map[string]interface{}
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 type SearchUserArgs struct {
@@ -52,7 +71,7 @@ type RegisterGraphQLResponse struct {
 }
 
 type SearchUserGraphQLData struct {
-	Search_user []SearchUserOutput `json:"search_user"`
+	Users []SearchUserOutput `json:"users"`
 }
 type SearchUserGraphQLResponse struct {
 	Data   SearchUserGraphQLData `json:"data,omitempty"`

@@ -4,21 +4,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 
-	models "github.com/Besufikad17/minab_events/graph/hasura/models"
-	constants "github.com/Besufikad17/minab_events/graph/utils/constants"
+	models "github.com/NehemiahAklil/minabtech-recipe-backend/graph/hasura/models"
+	constants "github.com/NehemiahAklil/minabtech-recipe-backend/graph/utils/constants"
 )
 
-func SearchUser(args models.SearchUserArgs) (response models.SearchUserOutput, err error) {
+func SearchUser(args models.SearchUserArgs) (response *models.SearchUserOutput, err error) {
 
 	hasuraResponse, err := executeSearchUser(args)
 
 	// throw if any unexpected error happens
 	if err != nil {
-		return
+		return nil, nil
 	}
 
 	// delegate Hasura error
@@ -26,9 +27,12 @@ func SearchUser(args models.SearchUserArgs) (response models.SearchUserOutput, e
 		err = errors.New(hasuraResponse.Errors[0].Message)
 		return
 	}
-
-	response = hasuraResponse.Data.Search_user[0]
-	return
+	fmt.Println(hasuraResponse)
+	if len(hasuraResponse.Data.Users) == 0 {
+		return nil, errors.New("Can't find user")
+	}
+	return &hasuraResponse.Data.Users[0], nil
+	// return &hasuraResponse.Data.Users, nil
 
 }
 func executeSearchUser(variables models.SearchUserArgs) (response models.SearchUserGraphQLResponse, err error) {
@@ -46,6 +50,7 @@ func executeSearchUser(variables models.SearchUserArgs) (response models.SearchU
 		return
 	}
 
+	fmt.Println("Request Body", string(reqBytes))
 	hasuraURL := os.Getenv("HASURA_URL")
 	resp, err := http.Post(hasuraURL, "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
@@ -57,6 +62,7 @@ func executeSearchUser(variables models.SearchUserArgs) (response models.SearchU
 	if err != nil {
 		return
 	}
+	fmt.Println("Response Body", string(respBytes))
 	err = json.Unmarshal(respBytes, &response)
 	if err != nil {
 		return

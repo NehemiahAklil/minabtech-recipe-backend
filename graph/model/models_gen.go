@@ -11,22 +11,22 @@ type Mutation struct {
 }
 
 type NewUser struct {
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phone_number"`
-	Password    string `json:"password"`
+	FirstName *string `json:"first_name,omitempty"`
+	LastName  string  `json:"last_name"`
+	Username  *string `json:"username,omitempty"`
+	Email     string  `json:"email"`
+	Password  *string `json:"password,omitempty"`
 }
 
 type Query struct {
 }
 
 type User struct {
-	ID          int    `json:"id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phone_number"`
-	Password    string `json:"password"`
-	Token       string `json:"token"`
+	ID        string  `json:"id"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Username  *string `json:"username,omitempty"`
+	Email     string  `json:"email"`
+	Password  string  `json:"password"`
+	Token     string  `json:"token"`
 }

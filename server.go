@@ -7,7 +7,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/Besufikad17/minab_events/graph"
+	"github.com/NehemiahAklil/minabtech-recipe-backend/graph"
 	"github.com/joho/godotenv"
 )
 

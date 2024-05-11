@@ -2,12 +2,13 @@ package helpers
 
 import (
 	"errors"
-	models "github.com/Besufikad17/minab_events/graph/model"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
+
+	models "github.com/NehemiahAklil/minabtech-recipe-backend/graph/model"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 var claims jwt.MapClaims
@@ -23,12 +24,12 @@ func CreateToken(user models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"id":          user.ID,
-			"firstName":   user.FirstName,
-			"lastName":    user.LastName,
-			"email":       user.Email,
-			"phoneNumber": user.PhoneNumber,
-			"exp":         time.Now().Add(time.Hour * 24).Unix(),
+			"id":        user.ID,
+			"firstName": user.FirstName,
+			"lastName":  user.LastName,
+			"email":     user.Email,
+			"username":  user.Username,
+			"exp":       time.Now().Add(time.Hour * 24).Unix(),
 		})
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {

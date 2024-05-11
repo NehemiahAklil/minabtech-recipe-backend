@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 
-	models "github.com/Besufikad17/minab_events/graph/hasura/models"
-	constants "github.com/Besufikad17/minab_events/graph/utils/constants"
+	models "github.com/NehemiahAklil/minabtech-recipe-backend/graph/hasura/models"
+	constants "github.com/NehemiahAklil/minabtech-recipe-backend/graph/utils/constants"
 )
 
 func Register(args models.RegisterArgs) (response models.RegisterOutput, err error) {
@@ -28,12 +29,16 @@ func Register(args models.RegisterArgs) (response models.RegisterOutput, err err
 }
 
 func execute(variables models.RegisterArgs) (response models.RegisterGraphQLResponse, err error) {
-	mapVariables := map[string]interface{}{
-		"first_name":   variables.First_name,
-		"last_name":    variables.Last_name,
-		"email":        variables.Email,
-		"phone_number": variables.Phone_number,
-		"password":     variables.Password,
+	// mapVariables := map[string]interface{}{
+	// 	"first_name":   variables.First_name,
+	// 	"last_name":    variables.Last_name,
+	// 	"email":        variables.Email,
+	// 	"password":     variables.Password,
+	// }
+
+	mapVariables, err := variables.ToMap()
+	if err != nil {
+		return
 	}
 
 	reqBody := models.GraphQLRequest{
@@ -44,7 +49,7 @@ func execute(variables models.RegisterArgs) (response models.RegisterGraphQLResp
 	if err != nil {
 		return
 	}
-
+	fmt.Println("We are in Register right now")
 	hasuraURL := os.Getenv("HASURA_URL")
 	resp, err := http.Post(hasuraURL, "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
