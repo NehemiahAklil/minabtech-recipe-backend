@@ -1,6 +1,11 @@
 package hasura_models
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+
+	"github.com/NehemiahAklil/minabtech-recipe-backend/domain/entity"
+)
 
 type GraphQLError struct {
 	Message string `json:"message"`
@@ -14,13 +19,15 @@ type RegisterOutput struct {
 	Email      *string
 }
 
-type SearchUserOutput struct {
-	Id         string
-	First_name string
-	Last_name  string
-	Username   string
-	Email      string
-	Password   string
+func (r *RegisterOutput) ToUser() (user *entity.User) {
+	user = &entity.User{
+		Id:        *r.Id,
+		Username:  *r.Username,
+		FirstName: *r.First_name,
+		LastName:  *r.Last_name,
+		Email:     *r.Email,
+	}
+	return user
 }
 
 type Mutation struct {
@@ -35,6 +42,17 @@ type RegisterArgs struct {
 	Password   string `json:"password"`
 }
 
+func (r *RegisterArgs) FromUser(user entity.User) RegisterArgs {
+	r = &RegisterArgs{
+		First_name: user.FirstName,
+		Last_name:  user.LastName,
+		Username:   user.Username,
+		Email:      user.Email,
+		Password:   string(user.Password),
+	}
+	log.Println(r)
+	return *r
+}
 func (rg *RegisterArgs) ToMap() (map[string]interface{}, error) {
 	// Marshal the struct to a byte slice
 	data, err := json.Marshal(rg)
@@ -53,7 +71,7 @@ func (rg *RegisterArgs) ToMap() (map[string]interface{}, error) {
 }
 
 type SearchUserArgs struct {
-	LoginText string
+	Identifier string
 }
 
 type GraphQLRequest struct {
@@ -71,7 +89,7 @@ type RegisterGraphQLResponse struct {
 }
 
 type SearchUserGraphQLData struct {
-	Users []SearchUserOutput `json:"users"`
+	Users []entity.User `json:"users"`
 }
 type SearchUserGraphQLResponse struct {
 	Data   SearchUserGraphQLData `json:"data,omitempty"`
